@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca Central - Gestión y Consulta</title>
+    <style>
+        /* ==========================================================================
+           1. VARIABLES GLOBALES Y RESET (Colores principales)
+           ========================================================================== */
+        :root {
+            --color-principal: #D2B48C;   /* Café claro / Tan */
+            --color-secundario: #800020;  /* Vinotinto / Bordo */
+            --color-apoyo: #FFFFFF;       /* Blanco */
+            --color-texto: #2C2C2C;       /* Gris oscuro para lectura */
+            --color-fondo-suave: #FDFBF7; /* Fondo cálido muy suave */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--color-fondo-suave);
+            color: var(--color-texto);
+            line-height: 1.6;
+        }
+
+        /* ==========================================================================
+           2. ENCABEZADO Y NAVEGACIÓN (Header)
+           ========================================================================== */
+        header {
+            background-color: var(--color-secundario);
+            color: var(--color-apoyo);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+
+        nav a {
+            color: var(--color-apoyo);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--color-principal);
+        }
+
+        /* ==========================================================================
+           3. SECCIÓN PRINCIPAL (Hero Banner)
+           ========================================================================== */
+        .hero {
+            background: linear-gradient(135deg, var(--color-principal), var(--color-secundario));
+            color: var(--color-apoyo);
+            text-align: center;
+            padding: 4rem 1rem;
+        }
+
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 1.5rem auto;
+        }
+
+        .btn-hero {
+            background-color: var(--color-apoyo);
+            color: var(--color-secundario);
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.3s;
+        }
+
+        .btn-hero:hover {
+            transform: scale(1.05);
+            background-color: #f0f0f0;
+        }
+
+        /* ==========================================================================
+           4. CONTENEDORES Y SECCIONES
+           ========================================================================== */
+        .contenedor {
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .titulo-seccion {
+            text-align: center;
+            color: var(--color-secundario);
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            position: relative;
+        }
+
+        .titulo-seccion::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background-color: var(--color-principal);
+            margin: 0.5rem auto 0 auto;
+        }
+
+        /* ==========================================================================
+           5. TARJETAS INFORMATIVAS Y FILTRO (Interacción JS)
+           ========================================================================== */
+        .controles-busqueda {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            gap: 0.5rem;
+        }
+
+        .controles-busqueda input {
+            width: 100%;
+            max-width: 400px;
+            padding: 0.8rem;
+            border: 2px solid var(--color-principal);
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .grid-tarjetas {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .tarjeta {
+            background-color: var(--color-apoyo);
+            border-radius: 8px;
+            border-left: 5px solid var(--color-principal);
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .tarjeta:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .tarjeta-icono {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tarjeta h3 {
+            color: var(--color-secundario);
+            margin-bottom: 0.5rem;
+        }
+
+        /* ==========================================================================
+           6. SECCIÓN DE SERVICIOS
+           ========================================================================== */
+        .servicios-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .servicio-item {
+            background-color: var(--color-principal);
+            color: var(--color-texto);
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        /* ==========================================================================
+           7. FORMULARIO SIMULADO
+           ========================================================================== */
+        .seccion-formulario {
+            background-color: var(--color-apoyo);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            max-width: 600px;
+            margin: 3rem auto;
+            border: 1px solid var(--color-principal);
+        }
+
+        .grupo-form {
+            margin-bottom: 1.2rem;
+        }
+
+        .grupo-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: var(--color-secundario);
+        }
+
+        .grupo-form input, 
+        .grupo-form select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background-color: var(--color-secundario);
+            color: var(--color-apoyo);
+            padding: 0.8rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-submit:hover {
+            background-color: #5d0017;
+        }
+
+        .mensaje-respuesta {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 4px;
+            display: none;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .mensaje-exito {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        /* ==========================================================================
+           8. PIE DE PÁGINA (Footer)
+           ========================================================================== */
+        footer {
+            background-color: var(--color-secundario);
+            color: var(--color-apoyo);
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        /* Responsivo */
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>📚 Biblioteca Central</h1>
+        <nav>
+            <ul>
+                <li><a href="#catalogo">Catálogo</a></li>
+                <li><a href="#servicios">Servicios</a></li>
+                <li><a href="#registro">Registro</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h2>Un espacio para el conocimiento</h2>
+        <p>Explora nuestra colección digital y física de libros, revistas e investigaciones académicas.</p>
+        <button class="btn-hero" onclick="scrollHaciaFormulario()">Solicitar Carné</button>
+    </section>
+
+    <main class="contenedor" id="catalogo">
+        <h2 class="titulo-seccion">Catálogo Destacado</h2>
+        
+        <div class="controles-busqueda">
+            <input type="text" id="inputBusqueda" placeholder="Buscar libro por título o género..." onkeyup="filtrarTarjetas()">
+        </div>
+
+        <div class="grid-tarjetas" id="contenedorTarjetas">
+            <article class="tarjeta" data-categoria="Ficción">
+                <div class="tarjeta-icono">📖</div>
+                <h3>Cien Años de Soledad</h3>
+                <p><strong>Autor:</strong> Gabriel García Márquez</p>
+                <p><strong>Categoría:</strong> Ficción / Realismo Mágico</p>
+            </article>
+
+            <article class="tarjeta" data-categoria="Tecnología">
+                <div class="tarjeta-icono">💻</div>
+                <h3>Patrones de Diseño</h3>
+                <p><strong>Autor:</strong> Erich Gamma et al.</p>
+                <p><strong>Categoría:</strong> Tecnología / Software</p>
+            </article>
+
+            <article class="tarjeta" data-categoria="Historia">
+                <div class="tarjeta-icono">🏛️</div>
+                <h3>Sapiens</h3>
+                <p><strong>Autor:</strong> Yuval Noah Harari</p>
+                <p><strong>Categoría:</strong> Historia / Ensayo</p>
+            </article>
+
+            <article class="tarjeta" data-categoria="Tecnología">
+                <div class="tarjeta-icono">⚙️</div>
+                <h3>Clean Code</h3>
+                <p><strong>Autor:</strong> Robert C. Martin</p>
+                <p><strong>Categoría:</strong> Tecnología / Programación</p>
+            </article>
+        </div>
+    </main>
+
+    <section class="contenedor" id="servicios">
+        <h2 class="titulo-seccion">Nuestros Servicios</h2>
+        <div class="servicios-list">
+            <div class="servicio-item">Préstamo a Domicilio</div>
+            <div class="servicio-item">Salas de Estudio VIP</div>
+            <div class="servicio-item">Acceso a Bases de Datos</div>
+            <div class="servicio-item">Talleres de Lectura</div>
+        </div>
+    </section>
+
+    <section class="contenedor seccion-formulario" id="registro">
+        <h2 class="titulo-seccion">Registro de Usuario</h2>
+        <form id="formularioRegistro" onsubmit="procesarFormulario(event)">
+            <div class="grupo-form">
+                <label for="nombre">Nombre Completo:</label>
+                <input type="text" id="nombre" required placeholder="Ej. Ana García">
+            </div>
+
+            <div class="grupo-form">
+                <label for="correo">Correo Electrónico:</label>
+                <input type="email" id="correo" required placeholder="ejemplo@correo.com">
+            </div>
+
+            <div class="grupo-form">
+                <label for="tipoUsuario">Tipo de Usuario:</label>
+                <select id="tipoUsuario" required>
+                    <option value="">Selecciona una opción</option>
+                    <option value="Estudiante">Estudiante</option>
+                    <option value="Docente">Docente</option>
+                    <option value="Investigador">Investigador</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-submit">Registrar Afiliación</button>
+        </form>
+
+        <div id="mensajeRespuesta" class="mensaje-respuesta"></div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Biblioteca Central. Desarrollado para Análisis y Desarrollo de Software.</p>
+    </footer>
+
+    <script>
+        /**
+         * Función 1: Desplazamiento suave al formulario al hacer clic en el botón Hero.
+         */
+        function scrollHaciaFormulario() {
+            document.getElementById('registro').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        /**
+         * Función 2: Filtrado dinámico de tarjetas (libros) en tiempo real.
+         * Lee la entrada del input de búsqueda y oculta/muestra los elementos.
+         */
+        function filtrarTarjetas() {
+            // Obtener el valor del campo de texto y pasarlo a minúsculas
+            const textoBusqueda = document.getElementById('inputBusqueda').value.toLowerCase();
+            // Obtener todas las tarjetas de la sección de catálogo
+            const tarjetas = document.querySelectorAll('.tarjeta');
+
+            tarjetas.forEach(tarjeta => {
+                // Obtener todo el contenido textual dentro de la tarjeta
+                const contenidoTarjeta = tarjeta.innerText.toLowerCase();
+                
+                // Evaluar si el texto ingresado coincide con el contenido de la tarjeta
+                if (contenidoTarjeta.includes(textoBusqueda)) {
+                    tarjeta.style.display = 'block'; // Mostrar la tarjeta
+                } else {
+                    tarjeta.style.display = 'none';  // Ocultar la tarjeta
+                }
+            });
+        }
+
+        /**
+         * Función 3: Procesar el formulario, simular el envío y mostrar un mensaje interactivo.
+         * @param {Event} event - Evento del formulario para prevenir la recarga
+         */
+        function procesarFormulario(event) {
+            // Prevenir la recarga automática de la página al enviar el formulario
+            event.preventDefault();
+
+            // Captura de datos de los campos
+            const nombre = document.getElementById('nombre').value;
+            const tipoUsuario = document.getElementById('tipoUsuario').value;
+            const contenedorMensaje = document.getElementById('mensajeRespuesta');
+
+            // Actualizar la interfaz mediante JavaScript mostrando un mensaje personalizado
+            contenedorMensaje.style.display = 'block';
+            contenedorMensaje.className = 'mensaje-respuesta mensaje-exito';
+            contenedorMensaje.innerHTML = `¡Registro exitoso! Bienvenido(a) <strong>${nombre}</strong>. Se ha activado tu cuenta como <strong>${tipoUsuario}</strong>.`;
+
+            // Limpiar el formulario
+            document.getElementById('formularioRegistro').reset();
+        }
+    </script>
+</body>
+</html>
